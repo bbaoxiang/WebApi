@@ -32,4 +32,25 @@ namespace WebApi.Dto
         public DateTime? date { set; get; }
     }
 
+    /// <summary>
+    /// ip信息
+    /// </summary>
+    public class IPInfo
+    {
+        /// <summary>
+        /// ip地址
+        /// </summary>
+        public string IP { set; get; }
+
+        /// <summary>
+        /// ip所属国家
+        /// </summary>
+        public string Country { set; get; }
+
+        /// <summary>
+        /// ip所属城市
+        /// </summary>
+        public string City { set; get; }
+    }
+
 }

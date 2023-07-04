@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MaxMind.GeoIP;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,6 +15,8 @@ namespace WebApi.Services
     /// </summary>
     public class BaseService
     {
+        private LogHelper logHelper = new LogHelper();
+
         /// <summary>
         /// 根据日期获取当天信息
         /// </summary>
@@ -41,6 +45,7 @@ namespace WebApi.Services
                 return result;
             }catch(Exception ex)
             {
+                logHelper.Error("GetDayInfo err:" + ex.Message);
                 return new ResultData<DayInfo>() { data = null, code = 0, msg = ex.Message };
             }
         }
@@ -120,6 +125,38 @@ namespace WebApi.Services
                 return 1;
             }
         }
+
+        /// <summary>
+        /// 获取ip信息
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <returns></returns>
+        public ResultData<IPInfo> GetIPInfo(string ip)
+        {
+            ResultData<IPInfo> result = new ResultData<IPInfo>() { code = 1, msg = "success" };
+            result.data = new IPInfo();
+            try
+            {
+                // 创建GeoIP对象
+                var geoIPService = new LookupService("Path_to_geoip_database_file");
+
+                // 解析IP地址获取地理信息
+                Location location = geoIPService.getLocation(ip);
+
+                // 获取归属地信息
+                result.data.Country = location.countryName;
+                result.data.City = location.city;
+                result.data.IP = ip;
+                logHelper.Info("$IP:" + JsonConvert.SerializeObject(location));
+                return result;
+            }
+            catch(Exception ex)
+            {
+                logHelper.Error("GetIPInfo err:" + ex.Message);
+                return new ResultData<IPInfo>() { data = null, code = 0, msg = ex.Message };
+            }
+        }
+
 
     }
 }
