@@ -1,9 +1,10 @@
-﻿using MaxMind.GeoIP;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using WebApi.Dto;
 using WebApi.Helper;
@@ -137,18 +138,34 @@ namespace WebApi.Services
             result.data = new IPInfo();
             try
             {
-                // 创建GeoIP对象
-                var geoIPService = new LookupService("Path_to_geoip_database_file");
+                string url = String.Format("http://api.ip138.com/query/?ip={0}&datatype=jsonp", ip);
 
-                // 解析IP地址获取地理信息
-                Location location = geoIPService.getLocation(ip);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "GET";
+                request.Headers.Add("token", "d308053cad4e239eeb29a8f89753bb6f");
+                request.AutomaticDecompression = DecompressionMethods.GZip;
 
-                // 获取归属地信息
-                result.data.Country = location.countryName;
-                result.data.City = location.city;
-                result.data.IP = ip;
-                logHelper.Info("$IP:" + JsonConvert.SerializeObject(location));
-                return result;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(stream);
+                string content = reader.ReadToEnd();
+                IPResult iPResult = JsonConvert.DeserializeObject<IPResult>(content);
+                if (iPResult.ret == "ok")
+                {
+                    // 获取归属地信息
+                    result.data.Country = iPResult.data[0];
+                    result.data.Province = iPResult.data[1];
+                    result.data.City = iPResult.data[2];
+                    result.data.Store = iPResult.data[3];
+                    result.data.Postcode = iPResult.data[4];
+                    result.data.Number = iPResult.data[5];
+                    result.data.IP = ip;
+                    return result;
+                }
+                else
+                {
+                    return new ResultData<IPInfo>() { code = 0, msg = content };
+                }
             }
             catch(Exception ex)
             {

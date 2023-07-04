@@ -48,9 +48,41 @@ namespace WebApi.Dto
         public string Country { set; get; }
 
         /// <summary>
+        /// ip所属省份
+        /// </summary>
+        public string Province { set; get; }
+
+        /// <summary>
         /// ip所属城市
         /// </summary>
         public string City { set; get; }
+
+        /// <summary>
+        /// ip所属区县
+        /// </summary>
+       // public string Area { set; get; }
+
+        /// <summary>
+        /// ip所属运营商
+        /// </summary>
+        public string Store { set; get; }
+
+        /// <summary>
+        /// ip所属邮编
+        /// </summary>
+        public string Postcode { set; get; }
+
+        /// <summary>
+        /// ip所属地区区号
+        /// </summary>
+        public string Number { set; get; }
+    }
+
+    public class IPResult
+    {
+        public string ret { set; get; }
+        public string ip { set; get; }
+        public string[] data { set; get; }
     }
 
 }

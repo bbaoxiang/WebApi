@@ -31,12 +31,12 @@ namespace WebApi.Controllers
         /// 获取ip信息
         /// </summary>
         /// <returns></returns>
-        //[HttpPost]
-        //public ResultData<IPInfo> GetIPInfo()
-        //{
-        //    string ipAddress = HttpContext.Current.Request.UserHostAddress;
-        //    return new BaseService().GetIPInfo(ipAddress);
-        //}
+        [HttpPost]
+        public ResultData<IPInfo> GetIPInfo()
+        {
+            string ipAddress = HttpContext.Current.Request.UserHostAddress;
+            return new BaseService().GetIPInfo(ipAddress);
+        }
 
     }
 }
